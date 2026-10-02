@@ -1,181 +1,363 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Chisa Taxi</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>All Wallet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#07070e;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
-.hero{position:relative;width:100vw;height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+  /* Layout concept: a single dark brand world mirroring the extension's own
+     on-page panel, a vertical scroll from hero proof-shot down through a
+     feature stack to one final call to action, framed cards floating on a
+     deep green-black ground. Deliberately single-theme (not light/dark
+     adaptive): every screenshot on the page already sits on this exact
+     background, so the brand world is the point, not a container for it. */
+  :root {
+    --bg: #050c09;
+    --bg-soft: #0a1510;
+    --panel: #0d1813;
+    --panel-border: rgba(110, 231, 183, .14);
+    --fg: #eef7f1;
+    --fg-muted: #9fb6a9;
+    --fg-faint: #6c8577;
+    --accent: #34d399;
+    --accent-soft: rgba(52, 211, 153, .14);
+    --gold: #f2b84b;
+    --gold-soft: rgba(242, 184, 75, .16);
 
-video.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-canvas.bg{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+    --font-display: 'Unbounded', sans-serif;
+    --font-body: 'Manrope', sans-serif;
+    --font-mono: 'Space Mono', monospace;
 
-.overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to right,rgba(0,0,0,0.93) 0%,rgba(0,0,0,0.65) 55%,rgba(0,0,0,0.25) 100%)}
-.overlay2{position:absolute;inset:0;z-index:1;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 55%)}
+    color-scheme: dark;
+  }
 
-nav{position:relative;z-index:10;padding:clamp(10px,2vh,22px) clamp(20px,5vw,50px)}
-.brand{display:inline-block;font-size:clamp(22px,4.5vw,48px);font-weight:900;color:#F5C200;letter-spacing:clamp(4px,1vw,10px);text-transform:uppercase;line-height:1}
+  * { box-sizing: border-box; }
+  html, body { height: auto; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(ellipse 900px 600px at 14% 0%, rgba(52,211,153,.14), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 18%, rgba(242,184,75,.08), transparent 55%),
+      radial-gradient(ellipse 900px 700px at 8% 100%, rgba(242,184,75,.06), transparent 60%),
+      var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  ::selection { background: var(--accent-soft); color: var(--fg); }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  }
 
-.content{position:relative;z-index:10;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 clamp(20px,5vw,50px) clamp(20px,3.5vh,44px)}
+  .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 24px; }
 
-.tagline{display:flex;align-items:center;gap:8px;margin-bottom:clamp(4px,0.8vh,12px);opacity:0;animation:fu 0.8s ease-out 0.1s forwards}
-.tagline-dot{width:5px;height:5px;background:#F5C200;border-radius:50%;flex-shrink:0}
-.tagline-text{color:rgba(255,255,255,0.5);font-size:clamp(8px,1.1vw,11px);font-weight:600;letter-spacing:3px;text-transform:uppercase}
+  /* ---------- nav ---------- */
+  header.nav {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(5, 12, 9, .72);
+    border-bottom: 1px solid transparent;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  header.nav.scrolled { border-bottom-color: var(--panel-border); background: rgba(5, 12, 9, .92); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand img { width: 30px; height: 30px; border-radius: 8px; }
+  .brand span { font-family: var(--font-display); font-weight: 600; font-size: 17px; letter-spacing: .01em; }
+  .nav-links { display: flex; align-items: center; gap: 28px; font-size: 14.5px; color: var(--fg-muted); }
+  .nav-links a { text-decoration: none; transition: color .15s ease; }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-links a.cta {
+    color: #042017; background: var(--accent); padding: 9px 18px; border-radius: 99px;
+    font-weight: 700; white-space: nowrap;
+  }
+  .nav-links a.cta:hover { background: #4fe3ad; }
+  .nav-only-cta { display: none; }
 
-.heading{line-height:0.88;margin-bottom:clamp(6px,1.2vh,20px);opacity:0;animation:fu 0.8s ease-out 0.3s forwards}
-.heading div{font-size:clamp(30px,7.5vw,88px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;display:block}
-.h-white{color:white}
-.h-yellow{color:#F5C200}
+  /* ---------- hero ---------- */
+  .hero { padding-block: 64px 28px; text-align: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-soft); border: 1px solid var(--panel-border);
+    padding: 7px 14px; border-radius: 99px; margin-bottom: 26px;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  h1 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: clamp(34px, 5.6vw, 58px); line-height: 1.08; letter-spacing: -.01em;
+    margin: 0 auto 22px; max-width: 16ch; text-wrap: balance;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .hero p.lede {
+    max-width: 52ch; margin: 0 auto 34px; color: var(--fg-muted);
+    font-size: 17.5px; line-height: 1.6; text-wrap: balance;
+  }
+  .hero-ctas { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-family: var(--font-body); font-weight: 700; font-size: 15px;
+    padding: 13px 24px; border-radius: 12px; text-decoration: none; border: 1px solid transparent;
+    transition: transform .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: #042017; }
+  .btn-primary:hover { background: #4fe3ad; }
+  .btn-ghost { background: transparent; color: var(--fg); border-color: var(--panel-border); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .trust-line { font-size: 13.5px; color: var(--fg-faint); }
+  .trust-line b { color: var(--fg-muted); font-weight: 600; }
 
-.subtext{color:rgba(255,255,255,0.5);font-size:clamp(10px,1.3vw,14px);line-height:1.6;max-width:420px;margin-bottom:clamp(8px,1.5vh,24px);opacity:0;animation:fu 0.8s ease-out 0.5s forwards}
-.subtext strong{color:white}
+  /* ---------- framed screenshot ---------- */
+  .frame {
+    position: relative; margin-top: 44px; border-radius: 20px; overflow: hidden;
+    border: 1px solid var(--panel-border); background: var(--panel);
+    box-shadow: 0 40px 100px -40px rgba(0,0,0,.7), 0 0 0 1px rgba(0,0,0,.2);
+  }
+  .frame img { width: 100%; }
 
-.cta-row{display:flex;align-items:stretch;gap:clamp(6px,1.2vw,12px);margin-bottom:clamp(8px,1.8vh,28px);flex-wrap:wrap;opacity:0;animation:fu 0.8s ease-out 0.7s forwards}
+  /* ---------- stat strip ---------- */
+  .stats {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    padding-block: 40px; margin-top: 8px;
+  }
+  .stat-pill {
+    font-size: 13.5px; font-weight: 600; color: var(--fg-muted);
+    border: 1px solid var(--panel-border); background: var(--panel);
+    padding: 9px 16px; border-radius: 99px; display: flex; align-items: center; gap: 8px;
+  }
+  .stat-pill b { color: var(--fg); font-weight: 700; }
+  .stat-pill .glyph { color: var(--accent); }
 
-.btn-wa,.btn-call{font-size:clamp(8px,1vw,11px);font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:clamp(8px,1.4vh,13px) clamp(12px,1.8vw,20px);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background 0.2s;flex:1 1 auto;white-space:nowrap}
-.btn-wa{background:#25D366;color:white}
-.btn-wa:hover{background:#1ea855}
-.btn-call{background:transparent;color:white;border:1px solid rgba(255,255,255,0.3)}
-.btn-call:hover{border-color:#F5C200;color:#F5C200}
+  /* ---------- section intro ---------- */
+  .section-intro { text-align: center; padding-block: 36px 8px; max-width: 46ch; margin: 0 auto; }
+  .section-intro h2 {
+    font-family: var(--font-display); font-weight: 600; font-size: clamp(26px, 3.6vw, 36px);
+    line-height: 1.2; margin: 0 0 12px; text-wrap: balance;
+  }
+  .section-intro p { color: var(--fg-muted); margin: 0; font-size: 16px; }
 
-.call-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.call-modal-bg.open{display:flex}
-.call-modal{background:#111;border:1px solid rgba(255,255,255,0.1);width:clamp(280px,88vw,480px);padding:clamp(20px,4vw,32px);position:relative}
-.call-modal-title{font-size:clamp(14px,2.5vw,20px);font-weight:900;color:#F5C200;letter-spacing:5px;text-transform:uppercase;margin-bottom:clamp(14px,2.5vh,24px)}
-.call-modal-close{position:absolute;top:clamp(12px,2vh,18px);right:clamp(12px,2vw,18px);background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:24px;line-height:1;transition:color 0.2s;padding:0}
-.call-modal-close:hover{color:white}
-.call-opt{display:flex;align-items:center;gap:clamp(14px,3vw,24px);padding:clamp(14px,2.2vh,22px) clamp(16px,3vw,24px);cursor:pointer;border:1px solid rgba(255,255,255,0.1);margin-bottom:10px;transition:all 0.2s;text-decoration:none;background:rgba(255,255,255,0.02)}
-.call-opt:last-child{margin-bottom:0}
-.call-opt:hover{border-color:#F5C200;background:rgba(245,194,0,0.05)}
-.call-carrier{font-size:clamp(10px,1.5vw,13px);font-weight:900;letter-spacing:4px;text-transform:uppercase;min-width:52px}
-.tnm{color:#4caf50}
-.airtel{color:#ff3c3c}
-.call-num{font-size:clamp(20px,4vw,32px);font-weight:900;color:white;letter-spacing:2px;line-height:1;white-space:nowrap}
+  /* ---------- feature rows ---------- */
+  .features { padding-block: 24px 20px; display: flex; flex-direction: column; gap: 64px; }
+  .feature-row {
+    display: grid; grid-template-columns: minmax(0,0.78fr) minmax(0,1.22fr);
+    gap: 40px; align-items: center;
+    opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease;
+  }
+  .feature-row.in-view { opacity: 1; transform: none; }
+  .feature-row.reverse { grid-template-columns: minmax(0,1.22fr) minmax(0,0.78fr); }
+  .feature-row.reverse .feature-copy { order: 2; }
+  .feature-row.wide { grid-template-columns: 1fr; }
+  .feature-copy .eyebrow { margin-bottom: 16px; }
+  .feature-copy h3 {
+    font-family: var(--font-display); font-weight: 600; font-size: clamp(21px, 2.6vw, 26px);
+    line-height: 1.25; margin: 0 0 14px; text-wrap: balance;
+  }
+  .feature-copy p { color: var(--fg-muted); margin: 0; font-size: 15.5px; }
+  .feature-row .frame { margin-top: 0; }
+  .feature-row.wide .section-intro { padding-top: 0; }
 
-.stats{display:flex;flex-wrap:nowrap;width:100%;justify-content:space-between;opacity:0;animation:fu 0.8s ease-out 0.9s forwards}
-.stat{flex:0 1 auto;min-width:0;border-right:1px solid rgba(255,255,255,0.1);padding:0 clamp(8px,3vw,32px)}
-.stat:first-child{padding-left:0}
-.stat:last-child{border-right:none;padding-right:0}
-.stat:last-child{border-right:none}
-.stat-val{font-size:clamp(16px,3.2vw,36px);font-weight:900;color:white;line-height:1;letter-spacing:-1px;white-space:nowrap}
-.stat-val span{color:#F5C200}
-.stat-label{font-size:clamp(6px,0.8vw,9px);font-weight:600;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-top:3px;white-space:nowrap}
+  /* ---------- final cta ---------- */
+  .cta-band {
+    margin-block: 80px 48px; padding: 56px 32px; text-align: center; border-radius: 24px;
+    background: linear-gradient(160deg, var(--panel), var(--bg-soft));
+    border: 1px solid var(--panel-border); position: relative; overflow: hidden;
+  }
+  .cta-band::before {
+    content: ""; position: absolute; inset: -40% -10% auto -10%; height: 280px;
+    background: radial-gradient(ellipse at center, rgba(52,211,153,.22), transparent 70%);
+    pointer-events: none;
+  }
+  .cta-band h2 {
+    font-family: var(--font-display); font-weight: 650; font-size: clamp(26px, 4vw, 38px);
+    margin: 0 0 14px; position: relative; text-wrap: balance;
+  }
+  .cta-band p { color: var(--fg-muted); max-width: 44ch; margin: 0 auto 28px; position: relative; font-size: 16px; }
+  .cta-band .hero-ctas { position: relative; margin-bottom: 14px; }
 
-.ico{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  /* ---------- footer ---------- */
+  footer { padding-block: 40px calc(40px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--panel-border); }
+  .footer-inner { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+  .footer-brand { display: flex; align-items: center; gap: 10px; }
+  .footer-brand img { width: 26px; height: 26px; border-radius: 7px; }
+  .footer-brand span { font-family: var(--font-display); font-weight: 600; font-size: 15.5px; }
+  footer .tagline { color: var(--fg-faint); font-size: 13.5px; margin-top: 8px; max-width: 32ch; }
+  .footer-links { display: flex; gap: 22px; font-size: 14px; flex-wrap: wrap; }
+  .footer-links a { text-decoration: none; color: var(--fg-muted); transition: color .15s ease; }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-bottom {
+    margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--panel-border);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    font-size: 12.5px; color: var(--fg-faint); font-family: var(--font-mono);
+  }
 
-@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @media (max-width: 760px) {
+    .nav-links a:not(.cta) { display: none; }
+    .wrap { padding-inline: 18px; }
+    .feature-row, .feature-row.reverse { grid-template-columns: 1fr; gap: 24px; }
+    .feature-row.reverse .feature-copy { order: 0; }
+    .hero { padding-block: 48px 20px; }
+    .cta-band { padding: 40px 22px; }
+  }
 </style>
-</head>
-<body>
-<div class="hero">
 
-  <video class="bg" id="bgvid" autoplay muted loop playsinline>
-    <source src="https://assets.mixkit.co/videos/42037/42037-720.mp4" type="video/mp4">
-  </video>
-  <canvas class="bg" id="bgcanvas" style="display:none"></canvas>
+<header class="nav" id="siteNav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <img src="images/icon.png" alt="">
+      <span>All Wallet</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a class="cta" href="https://chromewebstore.google.com/search/All%20Wallet" target="_blank" rel="noopener">Add to Chrome</a>
+    </nav>
+  </div>
+</header>
 
-  <div class="overlay"></div>
-  <div class="overlay2"></div>
-
-  <nav><div class="brand">CHISA TAXI</div></nav>
-
-  <div class="content">
-
-    <div class="tagline">
-      <div class="tagline-dot"></div>
-      <span class="tagline-text">Blantyre &amp; Surroundings — 24/7</span>
+<main id="top">
+  <section class="wrap hero">
+    <span class="eyebrow"><span class="dot"></span>Chrome Extension</span>
+    <h1>Every wallet you own, saved <em>once</em>.</h1>
+    <p class="lede">All Wallet is a private address book for your crypto wallets and bank accounts. No keys, no balances, nothing ever leaves your browser.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="https://chromewebstore.google.com/search/All%20Wallet" target="_blank" rel="noopener">
+        Add to Chrome, it's free
+      </a>
+      <a class="btn btn-ghost" href="#features">See how it works</a>
     </div>
+    <p class="trust-line"><b>Free forever</b> &middot; no account &middot; nothing tracked</p>
 
-    <div class="heading">
-      <div class="h-white">SAFE.</div>
-      <div class="h-white">RELIABLE.</div>
-      <div class="h-yellow">FAST.</div>
-    </div>
-
-    <div class="subtext">
-      Professional rides whenever you need them.<br>
-      <strong>Book instantly — call, WhatsApp, or save our number.</strong>
-    </div>
-
-    <div class="cta-row">
-      <button class="btn-wa" onclick="openWA()">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        Chat on WhatsApp
-      </button>
-      <button class="btn-call" onclick="openCallModal()">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        Call Now
-        <svg class="ico" style="width:10px;height:10px" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-    </div>
-
-    <div class="call-modal-bg" id="callModal" onclick="bgClose(event)">
-      <div class="call-modal">
-        <div class="call-modal-title">Choose Network</div>
-        <button class="call-modal-close" onclick="closeCallModal()">&times;</button>
-        <a class="call-opt" href="tel:+265891876878">
-          <span class="call-carrier tnm">TNM</span>
-          <span class="call-num">0891 876 878</span>
-        </a>
-        <a class="call-opt" href="tel:+265999584831">
-          <span class="call-carrier airtel">AIRTEL</span>
-          <span class="call-num">0999 584 831</span>
-        </a>
-      </div>
+    <div class="frame">
+      <img src="images/hero-one-click-copy.png" alt="All Wallet panel open on a page, showing saved wallets grouped by platform with a copied address confirmation">
     </div>
 
     <div class="stats">
-      <div class="stat"><div class="stat-val">24<span>/7</span></div><div class="stat-label">Always Available</div></div>
-      <div class="stat"><div class="stat-val"><span>★ </span>4.9</div><div class="stat-label">Rider Rating</div></div>
-      <div class="stat"><div class="stat-val">2<span>+</span></div><div class="stat-label">Active Lines</div></div>
-      <div class="stat"><div class="stat-val">Fast<span>.</span></div><div class="stat-label">Pickup Time</div></div>
+      <span class="stat-pill"><span class="glyph">&#9679;</span> <b>5+</b>&nbsp;networks supported</span>
+      <span class="stat-pill"><span class="glyph">&#9679;</span> One-click <b>copy</b></span>
+      <span class="stat-pill"><span class="glyph">&#9679;</span> Optional <b>password lock</b></span>
+      <span class="stat-pill"><span class="glyph">&#9679;</span> Wallets <b>seal themselves</b></span>
+    </div>
+  </section>
+
+  <section class="wrap" id="features">
+    <div class="section-intro">
+      <h2>Built for the way you actually use wallets</h2>
+      <p>Not a tracker, not a connector. Just the addresses you copy-paste all day, organized and one click away.</p>
     </div>
 
+    <div class="features">
+      <div class="feature-row">
+        <div class="feature-copy">
+          <span class="eyebrow"><span class="dot"></span>Tag it right</span>
+          <h3>Every address remembers its own network.</h3>
+          <p>Solana, Ethereum, BNB Chain, Polygon, Bitcoin and more, each entry is tagged with its network and asset, so you never send USDC down the wrong chain by mistake.</p>
+        </div>
+        <div class="frame">
+          <img src="images/feature-network-tags.png" alt="Wallet entries tagged with their network and asset, shown as separate labels">
+        </div>
+      </div>
+
+      <div class="feature-row reverse">
+        <div class="feature-copy">
+          <span class="eyebrow"><span class="dot"></span>Lock it down</span>
+          <h3>Turn on a password, keep it hidden.</h3>
+          <p>Set a password in Settings and the panel stays locked until you unlock it, with an auto-lock after an hour of inactivity. The check runs entirely on your device. Nothing is ever sent anywhere.</p>
+        </div>
+        <div class="frame">
+          <img src="images/feature-password-lock.png" alt="Password prompt overlay for the locked All Wallet panel">
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-copy">
+          <span class="eyebrow"><span class="dot"></span>It protects itself</span>
+          <h3>Saved wallets seal themselves.</h3>
+          <p>The moment an address is written, the row locks. Editing it again takes a deliberate unlock step, so a stray click or keystroke can never quietly change where your money goes.</p>
+        </div>
+        <div class="frame">
+          <img src="images/feature-sealed-wallets.png" alt="The Manage page showing wallet groups, with saved entries locked and read-only">
+        </div>
+      </div>
+
+      <div class="feature-row wide" id="privacy">
+        <div class="feature-copy" style="text-align:center;">
+          <span class="eyebrow"><span class="dot"></span>Zero compromise</span>
+          <h3 style="max-width:30ch;margin-inline:auto;">No account, no subscription, no network calls.</h3>
+          <p style="max-width:50ch;margin-inline:auto;">All Wallet never queries a blockchain or an API, and it never asks for a private key or seed phrase. It only stores exactly what you type in, on your own device.</p>
+        </div>
+        <div class="frame" style="margin-top:28px;">
+          <img src="images/feature-free-private.png" alt="Four cards: 100% free, no tracking, no balance checks, any network">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta-band">
+      <h2>Stop hunting through old chats for your own address.</h2>
+      <p>Install All Wallet, save every wallet and bank account once, and copy any of them in a click from here on.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="https://chromewebstore.google.com/search/All%20Wallet" target="_blank" rel="noopener">Add to Chrome, it's free</a>
+      </div>
+      <p class="trust-line">Works the moment you install it. No setup required.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">
+          <img src="images/icon.png" alt="">
+          <span>All Wallet</span>
+        </div>
+        <p class="tagline">Your crypto and bank addresses, one click away. Stored only in your browser.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://chromewebstore.google.com/search/All%20Wallet" target="_blank" rel="noopener">Chrome Web Store</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year">2026</span> All Wallet</span>
+      <span>Built for people who hold their own keys.</span>
+    </div>
   </div>
-</div>
+</footer>
 
 <script>
-function setVH(){
-  var vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', vh+'px');
-  document.querySelector('.hero').style.height = window.innerHeight+'px';
-}
-setVH();
-window.addEventListener('resize', setVH);
+  (function () {
+    try { document.getElementById('year').textContent = new Date().getFullYear(); } catch (e) {}
 
-var vid=document.getElementById('bgvid'),cv=document.getElementById('bgcanvas');
-vid.addEventListener('error',startCanvas);
-vid.addEventListener('canplay',function(){vid.playbackRate=0.6;});
-vid.addEventListener('stalled',function(){setTimeout(function(){if(vid.readyState<2)startCanvas();},3000);});
-setTimeout(function(){if(vid.readyState<2)startCanvas();},4000);
+    var navEl = document.getElementById('siteNav');
+    var onScroll = function () {
+      if (window.scrollY > 8) navEl.classList.add('scrolled');
+      else navEl.classList.remove('scrolled');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 
-function startCanvas(){
-  vid.style.display='none';cv.style.display='block';
-  cv.width=window.innerWidth;cv.height=window.innerHeight;
-  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,t=0;
-  function rnd(a,b){return a+Math.random()*(b-a);}
-  function newS(){return{x:rnd(-200,W),y:rnd(H*0.38,H*0.92),len:rnd(40,160),spd:rnd(4,14),col:Math.random()>0.45?'245,194,0':'255,255,255',a:rnd(0.2,0.6),w:Math.random()>0.65?2:1};}
-  var streaks=Array.from({length:65},newS);
-  var bdots=Array.from({length:100},function(){return{x:rnd(0,W),y:rnd(0,H*0.5),r:rnd(0.4,1.4),a:rnd(0.08,0.35),f:rnd(0,Math.PI*2)};});
-  function draw(){
-    ctx.clearRect(0,0,W,H);ctx.fillStyle='#07070e';ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='#0b0b18';ctx.fillRect(0,0,W,H*0.55);
-    bdots.forEach(function(d){var al=d.a*(0.5+0.5*Math.sin(t*0.025+d.f));ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fillStyle='rgba(255,210,80,'+al+')';ctx.fill();});
-    streaks.forEach(function(s){s.x+=s.spd;if(s.x>W+s.len)Object.assign(s,newS());var g=ctx.createLinearGradient(s.x-s.len,0,s.x+10,0);g.addColorStop(0,'rgba('+s.col+',0)');g.addColorStop(0.6,'rgba('+s.col+','+s.a+')');g.addColorStop(1,'rgba('+s.col+',0)');ctx.beginPath();ctx.strokeStyle=g;ctx.lineWidth=s.w;ctx.moveTo(s.x-s.len,s.y);ctx.lineTo(s.x,s.y);ctx.stroke();});
-    ctx.fillStyle='rgba(7,7,14,0.45)';ctx.fillRect(0,H*0.52,W,H*0.48);
-    t++;requestAnimationFrame(draw);
-  }
-  draw();
-  window.addEventListener('resize',function(){cv.width=window.innerWidth;cv.height=window.innerHeight;W=cv.width;H=cv.height;});
-}
-
-function openWA(){window.open('https://wa.me/265999584831?text=Hi%20Chisa%20Taxi%2C%20I%20need%20a%20ride!','_blank');}
-function openCallModal(){document.getElementById('callModal').classList.add('open');}
-function closeCallModal(){document.getElementById('callModal').classList.remove('open');}
-function bgClose(e){if(e.target===document.getElementById('callModal'))closeCallModal();}
+    var rows = Array.prototype.slice.call(document.querySelectorAll('.feature-row'));
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion || typeof IntersectionObserver === 'undefined') {
+      rows.forEach(function (r) { r.classList.add('in-view'); });
+    } else {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      rows.forEach(function (r) { io.observe(r); });
+    }
+  })();
 </script>
-</body>
-</html>
